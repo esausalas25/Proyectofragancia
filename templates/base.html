@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- 🔹 Esto hace tu web responsive -->
+    <title>{% block titulo %}Mi App{% endblock %}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='icono_perfume.png') }}">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+     
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.23.0/dist/sweetalert2.min.css" rel="stylesheet">
+   
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        a.text-white:hover {
+            color: #0d6efd !important;
+            text-decoration: underline;
+        }
+
+        /* Footer responsive */
+        footer {
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark  ">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold"  href="{{ url_for('inicio') }}">Fraganias Yassir's</a>
+
+            <!-- Botón hamburguesa -->
+            <button class="navbar-toggler"  type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+             
+            <!-- Links -->
+            <div class="collapse navbar-collapse"  id="navbarNav">
+                <ul class="navbar-nav mx-auto text-center" > <!-- 🔹 centrado en desktop, stack en mobile -->
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('inicio') }}">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('contacto') }}"></a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('contactopost') }}">Contactos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('acercade') }}">Acerca de</a></li>
+                </ul>
+
+                <!-- Botón Login alineado a la derecha -->
+                <div class="d-flex justify-content-center justify-content-lg-end mt-2 mt-lg-0">
+                    <a class="btn btn-light" style=" background: linear-gradient(90deg, #fffde7,#b9bcc0,#e5e6ec);" href="{{ url_for('login') }}">Login</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido dinámico -->
+    <main>
+        {% block contenido %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+     
+    <footer class="mt-5 bg-dark text-white pt-5 pb-4">
+        <div class="container text-center text-md-start">
+            <div class="row">
+
+                <!-- Columna 1 -->
+<div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+    <h5 class="text-uppercase mb-4 fw-bold">Fraganias Yassir's
+</h5>
+    <p>Juigalpa, Chontales</p>
+    <p>Nicaragua</p>
+</div>
+
+<!-- Columna 2 -->
+<div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+    <h5 class="text-uppercase mb-4 fw-bold">Fragancias</h5>
+    <p><a href="#" class="text-white text-decoration-none">Perfumes Dama</a></p>
+    <p><a href="#" class="text-white text-decoration-none">Perfumes Caballero</a></p>
+    <p><a href="#" class="text-white text-decoration-none">Sets de Regalo</a></p>
+</div>
+
+<!-- Columna 3 -->
+<div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
+    <h5 class="text-uppercase mb-4 fw-bold">Links</h5>
+    <p><a href="#" class="text-white text-decoration-none">Términos y Condiciones</a></p>
+    <p><a href="#" class="text-white text-decoration-none">Política de Privacidad</a></p>
+</div>
+
+<!-- Columna 4 -->
+<div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
+    <h5 class="text-uppercase mb-4 fw-bold">Contacto</h5>
+    <p>
+        <a href="https://www.facebook.com/" target="_blank" class="text-white text-decoration-none">
+            <i class="bi bi-facebook"></i> Facebook
+        </a>
+    </p>
+    <p>
+        <a href="https://www.instagram.com/" target="_blank" class="text-white text-decoration-none">
+            <i class="bi bi-instagram"></i> Instagram
+        </a>
+    </p>
+    <p>
+        <a href="mailto:perfumeriamolina@gmail.com" class="text-white text-decoration-none">
+            <i class="bi bi-envelope"></i> FraganiasYassir's
+@gmail.com
+        </a>
+    </p>
+</div>
+</div>
+
+<hr class="mb-4">
+
+
+            <!-- Copyright -->
+            <div class="row">
+                <div class="col text-center">
+                    <p>© Copyright - All rights reserved 2025</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle con JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.23.0/dist/sweetalert2.all.min.js"></script>
+</body>
+
+</html>

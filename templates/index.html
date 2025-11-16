@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Inicio{% endblock %}
+
+{% block contenido %}
+
+<!-- Carousel -->
+<div id="carouselExample" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="{{ url_for('static', filename='channe1l.jpg') }}" class="d-block w-100" alt="...">
+    </div>
+    <div class="carousel-item">
+      <img src="{{ url_for('static', filename='channe2l.jpg') }}" class="d-block w-100" alt="...">
+    </div>
+    <div class="carousel-item">
+      <img src="{{ url_for('static', filename='channe3l.jpg') }}" class="d-block w-100" alt="...">
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+    <span class="visually-hidden">Anterior</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+    <span class="visually-hidden">Siguiente</span>
+  </button>
+</div>
+
+<!-- Información -->
+<div class="container mt-5">
+  <h2 class="text-center mb-4">INFORMACIÓN</h2>
+  <div class="row">
+    <div class="col-sm-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Tipos de Fragancias</h5>
+          <p class="card-text">En Fraganias Yassir's
+            encontrarás una amplia variedad de fragancias con estilos únicos. Aprende a diferenciar entre:
+
+            Perfumes florales, románticos y elegantes.
+
+            Aromas cítricos, frescos y llenos de energía.
+
+            Fragancias orientales, intensas y seductoras.
+
+            Notas amaderadas, clásicas y sofisticadas.
+
+            Aromas dulces o frutales, modernos y juveniles.</p>
+          <p class="card-text">Conocer las familias olfativas te permitirá elegir el perfume ideal que se adapte a tu
+            personalidad y ocasión especial.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Cuidado del Perfume</h5>
+          <p class="card-text">El perfume es delicado y requiere cuidados para mantener su aroma. En Perfumería Molina
+            te enseñamos a:
+
+            Conservarlo en lugares frescos y sin exposición directa al sol.
+
+            Aplicarlo en puntos de pulso como cuello, muñecas y detrás de las orejas.
+
+            Evitar frotar el perfume para no alterar su composición.
+
+            Escoger la concentración adecuada según la ocasión.</p>
+          <p class="card-text">Siguiendo estos consejos, prolongarás la duración y calidad de tu fragancia favorita.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Cómo Elegir tu Perfume Ideal</h5>
+          <p class="card-text">Escoger un perfume es una decisión personal. En Fraganias Yassir's
+            te orientamos para:
+
+            Identificar las notas de salida, corazón y fondo.
+
+            Probar la fragancia directamente en tu piel.
+
+            Escoger aromas según la temporada o tu estilo de vida.
+
+            Combinar fragancias sin perder armonía.</p>
+          <p class="card-text">Cada aroma tiene una historia; encuentra el que mejor refleje tu esencia y acompañe cada
+            momento de tu vida.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Servicios -->
+<div class="container mt-5">
+  <h2 class="text-center mb-4">SERVICIOS</h2>
+  <div class="row">
+    <div class="col-sm-4">
+      <div class="card h-100 shadow-sm">
+        <img src="{{ url_for('static', filename='asad1.png') }}" class="card-img-top" alt="Web">
+        <div class="card-body">
+          <h5 class="card-title">Perfumes Originales</h5>
+          <p class="card-text">En Perfumería Molina ofrecemos fragancias 100% originales para dama y caballero. Descubre
+            aromas exclusivos con excelente fijación y duración, ideales para realzar tu estilo y presencia en cualquier
+            ocasión.</p>
+          <a href="#" class="btn btn-primary">Ver más</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card h-100 shadow-sm">
+        <img src="{{ url_for('static', filename='asad2.png') }}" class="card-img-top" alt="Productos">
+        <div class="card-body">
+          <h5 class="card-title">Sets de Regalo</h5>
+          <p class="card-text">Contamos con elegantes sets de regalo que combinan perfumes, lociones y presentaciones
+            especiales. Sorprende a tus seres queridos con detalles exclusivos que transmiten elegancia, frescura y
+            estilo.</p>
+          <a href="#" class="btn btn-primary">Ver más</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card h-100 shadow-sm">
+        <img src="{{ url_for('static', filename='asad3.png') }}" class="card-img-top" alt="Cursos">
+        <div class="card-body">
+          <h5 class="card-title">Asesoría Personalizada</h5>
+          <p class="card-text">Recibe asesoría profesional para elegir la fragancia perfecta según tu piel, gustos y
+            personalidad. En Perfumería Molina te ayudamos a encontrar el aroma que te identifique y te haga sentir
+            seguro en cada momento.</p>
+          <a href="#" class="btn btn-primary">Ver más</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
