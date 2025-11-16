@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block titulo %}LOGIN{% endblock %}
+
+{% block contenido %}
+
+<!-- Mostrar mensajes flash -->
+{% with msg = get_flashed_messages(with_categories=True) %}
+  {% if msg %}
+    {% for category, message in msg %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        <strong>{{ message }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- Fondo con degradado elegante -->
+<div class="container-fluid vh-100" style="background: linear-gradient(135deg, #2b2b2b, #1b1b1b);">
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col col-xl-10">
+        <div class="card shadow-lg" style="border-radius: 1rem; background-color: #f3f1ef;">
+          <div class="row g-0">
+
+            <!-- Panel izquierdo -->
+            <div class="col-md-6 col-lg-5 d-none d-md-flex h-100">
+              <div class="card-body d-flex flex-column justify-content-center align-items-center p-4 p-md-5 text-white"
+                   style="background: linear-gradient(135deg, #8d6e63, #5d4037); border-radius: 1rem 0 0 1rem; height: 100%; width: 100%;">
+                <div class="mb-4">
+                  <img src="{{ url_for('static', filename='yassir.png') }}" alt="Fragancias Yassir’s"
+                       style="width: 200px; height: 200px; object-fit: cover; border-radius: 50%; border: 3px solid #d4af37;">
+                </div>
+                <h2 class="fw-bold mb-4 text-center text-uppercase">Bienvenido a Fragancias Yassir’s</h2>
+                <p class="mb-5 text-center">¿Aún no tienes una cuenta? Regístrate y descubre el mundo de las fragancias exclusivas.</p>
+                <a href="{{ url_for('Registro') }}" class="btn btn-lg btn-register">Registrarse</a>
+              </div>
+            </div>
+
+            <!-- Panel derecho -->
+            <div class="col-md-6 col-lg-7 d-flex align-items-center">
+              <div class="card-body p-4 p-lg-5 text-dark">
+                <h2 class="fw-bold mb-4 text-center text-uppercase">Iniciar Sesión</h2>
+
+                {% if error %}
+                <div class="alert alert-danger text-center">{{ error }}</div>
+                {% endif %}
+
+                <!-- Botón Google -->
+                <div class="d-grid mb-4">
+                  <button class="btn btn-lg d-flex align-items-center justify-content-center btn-google" type="button">
+                    <img src="{{ url_for('static', filename='googleicon.png') }}" alt="Google"
+                         style="width: 20px; height: 20px; margin-right: 10px;">
+                    Iniciar sesión con Google
+                  </button>
+                </div>
+
+                <!-- Separador -->
+                <div class="d-flex justify-content-center my-4">
+                  <p class="fw-bold mb-0 text-center text-muted">o usa tu correo electrónico</p>
+                </div>
+
+                <!-- Formulario -->
+                <form action="{{ url_for('accesologin') }}" method="POST">
+                  <div class="form-outline mb-4">
+                    <input type="email" name="email" class="form-control form-control-lg"
+                           placeholder="Correo electrónico" required />
+                  </div>
+                  <div class="form-outline mb-4">
+                    <input type="password" name="password" class="form-control form-control-lg"
+                           placeholder="Contraseña" required />
+                  </div>
+                  <div class="d-grid">
+                    <button class="btn btn-lg btn-login" type="submit">Iniciar Sesión</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Estilos personalizados -->
+<style>
+/* Botón Registrarse */
+.btn-register {
+  background: linear-gradient(135deg, #d4af37, #b8860b) !important;
+  color: #fff !important;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border: none;
+  border-radius: 30px;
+  padding: 10px 30px;
+  transition: all 0.3s ease;
+}
+.btn-register:hover {
+  background: linear-gradient(135deg, #b8860b, #d4af37);
+  transform: scale(1.05);
+}
+.btn-register:active { transform: scale(0.95); }
+
+/* Botón Google */
+.btn-google {
+  background-color: #fff !important;
+  color: #444 !important;
+  border: 1px solid #ccc !important;
+  border-radius: 30px;
+  transition: all 0.2s ease-in-out;
+}
+.btn-google:hover {
+  background-color: #f0f0f0 !important;
+  transform: scale(1.03);
+}
+.btn-google:active { transform: scale(0.95); }
+
+/* Botón Iniciar Sesión */
+.btn-login {
+  background: linear-gradient(135deg, #3e2723, #5d4037) !important;
+  color: #fff !important;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border: none !important;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+}
+.btn-login:hover {
+  background: linear-gradient(135deg, #5d4037, #3e2723);
+  transform: scale(1.05);
+}
+.btn-login:active { transform: scale(0.95); }
+
+/* Texto general */
+h2, p {
+  font-family: 'Poppins', sans-serif;
+}
+</style>
+
+{% endblock %}
