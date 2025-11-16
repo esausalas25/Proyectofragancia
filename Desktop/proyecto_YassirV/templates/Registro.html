@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block titulo %} REGISTRO {% endblock %}
+
+{% block contenido %}
+<div class="container-fluid vh-100" style="background: linear-gradient(135deg, #2b2b2b, #1b1b1b);">
+    <div class="container py-5 h-100 mt-n5">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-10 col-md-8 col-lg-7 col-xl-7"><!-- 🔹 más compacto -->
+                <div class="card shadow-lg" style="border-radius: 1rem; background-color: #f3f1ef;">
+                    <div class="row g-0">
+
+                        <!-- Panel izquierdo -->
+                        <div class="col-md-5 d-none d-md-flex h-100">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center p-4 text-white"
+                                 style="background: linear-gradient(135deg, #5d4037, #3e2723); border-radius: 1rem 0 0 1rem; height: 100%;">
+                                
+                                <div class="mb-3">
+                                    <img src="{{ url_for('static', filename='yassir.png') }}" alt="Fragancias Yassir’s"
+                                         style="width: 220px; height: 220px; object-fit: cover; border-radius: 12px; border: 3px solid #d4af37;">
+                                </div>
+
+                                <h3 class="fw-bold mb-3 text-center text-uppercase">¡Bienvenido!</h3>
+                                <p class="mb-4 text-center small">Crea tu cuenta y disfruta de las fragancias más exclusivas.</p>
+
+                                <a href="{{ url_for('login') }}" class="btn btn-md btn-login">
+                                    Iniciar Sesión
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Panel derecho -->
+                        <div class="col-md-7 d-flex align-items-center">
+                            <div class="card-body p-4 text-dark">
+
+                                <h3 class="fw-bold mb-3 text-center text-uppercase">Crear cuenta</h3>
+
+                                <!-- Botón de Google -->
+                                <div class="d-grid mb-3">
+                                    <button class="btn btn-md d-flex align-items-center justify-content-center btn-google" type="button">
+                                        <img src="{{ url_for('static', filename='googleicon.png') }}" alt="Google"
+                                             style="width: 18px; height: 18px; margin-right: 8px;">
+                                        Registrarse con Google
+                                    </button>
+                                </div>
+
+                                <!-- Separador -->
+                                <div class="d-flex justify-content-center my-3">
+                                    <p class="fw-bold mb-0 text-center text-muted small">o usa tu correo electrónico</p>
+                                </div>
+
+                                <!-- Formulario -->
+                                <form action="{{ url_for('Registro') }}" method="POST">
+                                    <div class="form-outline mb-3">
+                                        <input type="text" name="nombre" class="form-control form-control-lg"
+                                               placeholder="Nombre completo" required />
+                                    </div>
+                                    <div class="form-outline mb-3">
+                                        <input type="email" name="email" class="form-control form-control-lg"
+                                               placeholder="Correo electrónico" required />
+                                    </div>
+                                    <div class="form-outline mb-3">
+                                        <input type="password" name="password" class="form-control form-control-lg"
+                                               placeholder="Contraseña" required />
+                                    </div>
+
+                                    <!-- Botón Registrarse -->
+                                    <div class="d-grid">
+                                        <button class="btn btn-md btn-register" type="submit">
+                                            Registrarse
+                                        </button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Subir cuadro */
+.container.py-5.h-100 {
+    margin-top: -60px;
+}
+
+/* En pantallas pequeñas */
+@media (max-height: 800px) {
+    .container.py-5.h-100 { margin-top: -30px; }
+}
+
+/* Botón Iniciar Sesión */
+.btn-login {
+    background: linear-gradient(135deg, #d4af37, #b8860b) !important;
+    color: #fff !important;
+    font-weight: 600;
+    border: none;
+    border-radius: 25px;
+    padding: 8px 25px;
+    transition: all .3s ease;
+}
+.btn-login:hover { background: linear-gradient(135deg, #b8860b, #d4af37); transform: scale(1.05); }
+
+/* Botón Google */
+.btn-google {
+    background-color: #ffffff !important;
+    color: #444 !important;
+    border: 1px solid #ccc !important;
+    border-radius: 25px;
+    transition: all .2s ease-in-out;
+    padding: 8px 20px;
+}
+.btn-google:hover { background-color: #f0f0f0 !important; transform: scale(1.03); }
+
+/* Botón Registrarse */
+.btn-register {
+    background: linear-gradient(135deg, #3e2723, #5d4037) !important;
+    color: #fff !important;
+    font-weight: 600;
+    border: none !important;
+    border-radius: 25px;
+    padding: 10px 30px;
+    transition: all .3s ease;
+}
+.btn-register:hover { background: linear-gradient(135deg, #5d4037, #3e2723); transform: scale(1.05); }
+
+/* Inputs */
+.form-control {
+    border-radius: 10px;
+    border: 1px solid #c9c4bf;
+    padding: 10px 14px;
+    background-color: #fff;
+}
+.form-control:focus {
+    border-color: #d4af37;
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+}
+
+/* Tipografía */
+h2, h3, p { font-family: 'Poppins', sans-serif; }
+</style>
+{% endblock %}

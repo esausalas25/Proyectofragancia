@@ -1,0 +1,204 @@
+{% extends 'baseadmin.html' %}
+{% block title %}Agregar Cursos{% endblock %}
+
+{% block body %}
+<!-- ALERTA SweetAlert2 -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<ul class="flashes">
+    {% for category, message in messages %}
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+        Toast.fire({
+            icon: "{{ category }}",
+            title: "{{ message }}"
+        });
+    </script>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- FORMULARIO AGREGAR CURSO -->
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header text-center alert alert-danger py-3">
+                    <h3 class="card-title mb-0">Agregar Marca de Perfume
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('agregar_producto') }}">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nombre del Perfume
+</label>
+                            <input type="text" class="form-control" name="nombre"
+                                placeholder="Ingrese el nombre del curso" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Precio ($)</label>
+                            <input type="number" class="form-control" name="precio" placeholder="0.00" step="0.01"
+                                min="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Descripción</label>
+                            <textarea class="form-control" name="descripcion" rows="3"
+                                placeholder="Ingrese la descripción del curso" required></textarea>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-lg w-100"
+                                style="border: 2px solid #198754; color: #198754; background: transparent;">
+                                Agregar Marca de Perfume
+
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABLA DE CURSOS -->
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header text-center alert alert-primary py-3">
+                    <h3 class="card-title mb-0">Lista de Marcas de Perfume
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive" style="max-height: 500px; overflow-y:auto;">
+                        <table class="table table-striped table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Precio</th>
+                                    <th>Descripción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if productos and productos|length > 0 %}
+                                {% for producto in productos %}
+                                <tr>
+                                    <td>{{ producto.id }}</td>
+                                    <td>{{ producto.nombre }}</td>
+                                    <td>${{ "%.2f"|format(producto.precio) }}</td>
+                                    <td>{{ producto.descripcion }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No hay cursos registrados</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+        height: 100%;
+    }
+
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+        font-size: 1.2rem;
+    }
+
+    .table th {
+        background-color: #343a40;
+        color: white;
+        text-align: center;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .btn {
+        border-radius: 5px;
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+
+    .table-responsive::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    .table td,
+    .table th {
+        padding: 12px 8px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function (e) {
+            const nombre = document.querySelector('input[name="nombre"]').value.trim();
+            const precio = document.querySelector('input[name="precio"]').value;
+            const descripcion = document.querySelector('textarea[name="descripcion"]').value.trim();
+
+            if (!nombre || !precio || !descripcion) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Campos incompletos',
+                    text: 'Por favor, complete todos los campos obligatorios.',
+                    icon: 'warning',
+                    confirmButtonText: 'Entendido'
+                });
+                return false;
+            }
+
+            if (parseFloat(precio) <= 0) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Precio inválido',
+                    text: 'El precio debe ser mayor a cero.',
+                    icon: 'warning',
+                    confirmButtonText: 'Entendido'
+                });
+                return false;
+            }
+        });
+    });
+</script>
+{% endblock %}

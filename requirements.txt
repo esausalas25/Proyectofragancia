@@ -1,4 +1,11 @@
-﻿Flask==3.1.1
+Flask==3.1.1
 mysql-connector-python
 python-dotenv
 blinker
+Flask==3.1.1
+mysql-connector-python
+python-dotenv
+blinker
+gunicorn
+flask-mysqldb
+

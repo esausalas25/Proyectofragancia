@@ -1,0 +1,228 @@
+{% extends 'baseadmin.html' %}
+{% block title %}Editar Usuario{% endblock %}
+{% block body %}
+
+<div class="container mt-4">
+
+    <!-- Mensajes flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert" 
+               style="box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- AGREGAR NUEVO USUARIO (REPLEGABLE) -->
+    <div class="card mb-4 shadow-lg" style="border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.15);">
+        <div class="card-header text-white d-flex justify-content-between align-items-center" 
+             style="background: linear-gradient(to right, #28a745, #ffffff); box-shadow: inset 0 -2px 4px rgba(0,0,0,0.1); border-radius: 10px;">
+            <h5 class="mb-0"></h5>
+            <button class="btn btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#agregarUsuarioCollapse" 
+                    aria-expanded="true" aria-controls="agregarUsuarioCollapse"
+                    style="border: 2px solid #28a745; color: #28a745; background: transparent;">
+                Agregar Usuario
+            </button>
+        </div>
+        <div class="collapse show" id="agregarUsuarioCollapse">
+            <div class="card-body">
+                <form method="POST" id="addUserForm">
+                    <input type="hidden" name="agregar_usuario" value="1">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" name="nombre" class="form-control shadow-sm" 
+                                   style="box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Correo</label>
+                            <input type="email" name="email" class="form-control shadow-sm" 
+                                   style="box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Contraseña</label>
+                            <input type="text" name="password" class="form-control shadow-sm" 
+                                   style="box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success shadow-sm" 
+                            style="box-shadow: 0 4px 10px rgba(0,0,0,0.2);">Agregar Usuario</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ENCABEZADO DE LISTA DE USUARIOS -->
+    <div class="mb-3">
+        <div class="text-center" style="padding: 20px;">
+            <h4 class="mb-0" style="font-size: 1.8rem; font-weight: 600; color: black;">Lista de Usuarios</h4>
+        </div>
+    </div>
+
+    <!-- LISTA DE USUARIOS -->
+    <div class="card mb-4 shadow-lg" style="border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.15);">
+        <div class="card-body">
+            <table class="table table-hover shadow-sm" style="box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-radius: 8px;">
+                <thead>
+                    <tr>
+                        <th class="text-white">N°</th>
+                        <th class="text-white">Nombre</th>
+                        <th class="text-white">Correo</th>
+                        <th class="text-white">Contraseña</th>
+                        <th class="text-white">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in usuarios %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ u.nombre }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ u.password }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-success shadow-sm" data-bs-toggle="collapse" data-bs-target="#editar{{ u.id }}" 
+                                    style="box-shadow: 0 4px 8px rgba(0,0,0,0.15);">Editar</button>
+                            <a href="{{ url_for('listar') }}?eliminar_usuario={{ u.id }}" class="btn btn-sm btn-danger shadow-sm delete-user" 
+                               style="box-shadow: 0 4px 8px rgba(0,0,0,0.15);">Eliminar</a>
+                        </td>
+                    </tr>
+                    <tr class="collapse" id="editar{{ u.id }}">
+                        <td colspan="5">
+                            <form method="POST" class="update-user-form">
+                                <input type="hidden" name="id" value="{{ u.id }}">
+                                <input type="hidden" name="editar_usuario" value="1">
+                                <div class="row">
+                                    <div class="col-md-4 mb-2">
+                                        <input type="text" name="nombre" class="form-control shadow-sm" 
+                                               style="box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);" value="{{ u.nombre }}" required>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <input type="email" name="email" class="form-control shadow-sm" 
+                                               style="box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);" value="{{ u.email }}" required>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <input type="text" name="password" class="form-control shadow-sm" 
+                                               style="box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);" value="{{ u.password }}" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-sm shadow-sm mt-1 update-user-btn" 
+                                        style="box-shadow: 0 4px 10px rgba(0,0,0,0.2);">Actualizar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- ESTILO DEL ENCABEZADO -->
+<style>
+    thead th {
+        background-color: black !important;
+        color: white !important;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+</style>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ALERTA CERRAR SESIÓN
+    const logoutBtn = document.querySelector('a[href="{{ url_for("logout") }}"]');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: '¿Está seguro que desea cerrar el sistema?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, cerrar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = logoutBtn.href;
+                }
+            });
+        });
+    }
+
+    // ALERTA ELIMINAR USUARIO
+    const deleteButtons = document.querySelectorAll('.delete-user');
+    deleteButtons.forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const url = this.href;
+
+            Swal.fire({
+                title: '¿Deseas eliminar este usuario?',
+                text: "Esta acción no se puede deshacer",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+        });
+    });
+
+    // ALERTA ACTUALIZAR USUARIO
+    const updateForms = document.querySelectorAll('.update-user-form');
+    updateForms.forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: '¿Deseas actualizar este usuario?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, actualizar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+
+    // ALERTA AGREGAR USUARIO
+    const addUserForm = document.querySelector('#addUserForm');
+    if(addUserForm) {
+        addUserForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: '¿Deseas agregar este usuario?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, agregar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if(result.isConfirmed){
+                    addUserForm.submit();
+                }
+            });
+        });
+    }
+
+});
+</script>
+
+{% endblock %}
