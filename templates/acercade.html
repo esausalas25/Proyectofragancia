@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Acerca de{% endblock %}
+
+{% block contenido %}
+
+<!-- Encabezado con imagen -->
+<div class="container mt-5">
+  <div class="text-center">
+    <img src="{{ url_for('static', filename='FraganiasYassir.jpg') }}" 
+         class="img-fluid rounded shadow-sm mb-4" 
+         alt="Perfumería Molina - Fragancias que inspiran" 
+         style="max-height: 150px; object-fit: cover;">
+  </div>
+  <h2 class="text-center mb-4">ACERCA DE Fraganias Yassir's</h2>
+  <p class="text-center">
+    En <strong>Fraganias Yassir's</strong> creemos que cada fragancia cuenta una historia.  
+    Nos especializamos en ofrecer perfumes auténticos, elegantes y duraderos, inspirados en la esencia, 
+    el estilo y la personalidad de cada cliente.  
+    Nuestra pasión es ayudarte a encontrar ese aroma perfecto que refleje quién eres 
+    y te acompañe en cada momento importante de tu vida.
+  </p>
+</div>
+
+<!-- Misión, Visión, Objetivo -->
+<div class="container mt-5">
+  <div class="row text-center">
+    <div class="col-sm-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Misión</h5>
+          <p class="card-text">
+            Ofrecer <strong>fragancias originales y de calidad</strong> que transmitan emociones, elegancia y confianza, 
+            brindando una atención personalizada y un servicio excepcional para cada cliente que busca expresar su esencia 
+            a través del perfume.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Visión</h5>
+          <p class="card-text">
+            Ser reconocidos como una de las <strong>mejores perfumerías de Nicaragua</strong>, destacando por la autenticidad 
+            de nuestros productos, el compromiso con la satisfacción del cliente y la creación de experiencias olfativas únicas 
+            que inspiren bienestar y estilo.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Objetivo</h5>
+          <p class="card-text">
+            Brindar una experiencia de compra agradable y confiable, ofreciendo <strong>perfumes, sets de regalo y asesoría 
+            personalizada</strong> que ayuden a nuestros clientes a descubrir y resaltar su aroma ideal, combinando calidad, 
+            elegancia y autenticidad.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Valores -->
+<div class="container mt-5">
+  <h2 class="text-center mb-4">NUESTROS VALORES</h2>
+  <div class="row text-center">
+    <div class="col-sm-3">
+      <div class="card shadow-sm">
+        <img src="{{ url_for('static', filename='calidad.jpg') }}" class="card-img-top" alt="Calidad">
+        <div class="card-body">
+          <h5 class="card-title">Calidad</h5>
+          <p class="card-text">Ofrecemos solo productos auténticos y garantizados, cuidando cada detalle para asegurar la mejor experiencia.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="card shadow-sm">
+        <img src="{{ url_for('static', filename='confianza.jpg') }}" class="card-img-top" alt="Confianza">
+        <div class="card-body">
+          <h5 class="card-title">Confianza</h5>
+          <p class="card-text">Nuestra prioridad es la satisfacción del cliente, brindando un servicio transparente y responsable.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="card shadow-sm">
+        <img src="{{ url_for('static', filename='atencion.jpg') }}" class="card-img-top" alt="Atención Personalizada">
+        <div class="card-body">
+          <h5 class="card-title">Atención Personalizada</h5>
+          <p class="card-text">Escuchamos tus preferencias para ayudarte a encontrar la fragancia perfecta según tu estilo y ocasión.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="card shadow-sm">
+        <img src="{{ url_for('static', filename='elegancia.jpg') }}" class="card-img-top" alt="Elegancia">
+        <div class="card-body">
+          <h5 class="card-title">Elegancia</h5>
+          <p class="card-text">Cada aroma representa sofisticación y distinción, inspirando seguridad y buen gusto en cada aplicación.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
