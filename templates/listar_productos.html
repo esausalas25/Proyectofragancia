@@ -5,7 +5,7 @@
 <div class="container-fluid p-4" style="background-color:#eefaf5; min-height:100vh;">
 
     <!-- Letrero con sombra -->
-    <h2 class="text-center alert-productos mb-4">Lista de Cursos</h2>
+    <h2 class="text-center alert-productos mb-4">Lista de Perfumes</h2>
 
     <!-- Controles superiores -->
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -47,6 +47,7 @@
                     <th>Nombre</th>
                     <th>Precio</th>
                     <th>Descripción</th>
+                    <th>Fecha</th> <!-- NUEVA COLUMNA FECHA -->
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -67,6 +68,11 @@
                             <input type="text" name="descripcion" value="{{ producto.descripcion }}"
                                 class="form-control form-control-sm">
                         </td>
+                        <!-- NUEVO CAMPO FECHA -->
+                        <td>
+                            <input type="date" name="fecha" value="{% if producto.fecha %}{% if producto.fecha is string %}{{ producto.fecha }}{% else %}{{ producto.fecha.strftime('%Y-%m-%d') }}{% endif %}{% endif %}"
+                                class="form-control form-control-sm">
+                        </td>
                         <td class="text-center">
                             <form method="POST" action="">
                                 <form method="POST" action="">
@@ -74,8 +80,6 @@
                                         onclick="confirmarGuardado(this.form)">
                                         <i class="fas fa-pen"></i>
                                     </button>
-
-
 
                                     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
                                     <script>
@@ -101,10 +105,7 @@
                                                 }
                                             });
                                         }
-
-
                                     </script>
-
 
                                     <button type="button" class="btn btn-danger btn-sm shadow-sm" title="Eliminar"
                                         onclick="confirmarEliminacion(this.form)">
@@ -199,6 +200,11 @@
     .shadow {
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
     }
+
+    /* Estilo específico para el campo fecha */
+    input[type="date"] {
+        max-width: 120px;
+    }
 </style>
 
 <!-- Scripts -->
@@ -221,7 +227,9 @@
             const nombreInput = row.querySelector('input[name="nombre"]');
             const nombre = nombreInput ? nombreInput.value.toLowerCase() : '';
             const id = row.querySelector('td:first-child')?.textContent.toLowerCase() || '';
-            return id.includes(filter) || nombre.includes(filter);
+            const fechaInput = row.querySelector('input[name="fecha"]');
+            const fecha = fechaInput ? fechaInput.value.toLowerCase() : '';
+            return id.includes(filter) || nombre.includes(filter) || fecha.includes(filter);
         });
 
         const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
@@ -265,29 +273,27 @@
 
     // ===== Botones funcionales =====
 
-   // Copiar tabla
-document.getElementById('btnCopiar').addEventListener('click', () => {
-    let text = '';
-    allRows.forEach(row => {
-        if (row.style.display !== 'none') { // Solo filas visibles
-            const cells = Array.from(row.cells).map(cell => {
-                const input = cell.querySelector('input');
-                if (input) return input.value.trim(); // Si hay input, tomamos su valor
-                else {
-                    // Tomamos solo texto directo del nodo, ignorando HTML interno
-                    return Array.from(cell.childNodes)
-                        .filter(node => node.nodeType === Node.TEXT_NODE)
-                        .map(node => node.textContent.trim())
-                        .join(' ');
-                }
-            });
-            text += cells.join('\t') + '\n';
-        }
+    // Copiar tabla
+    document.getElementById('btnCopiar').addEventListener('click', () => {
+        let text = '';
+        allRows.forEach(row => {
+            if (row.style.display !== 'none') { // Solo filas visibles
+                const cells = Array.from(row.cells).map(cell => {
+                    const input = cell.querySelector('input');
+                    if (input) return input.value.trim(); // Si hay input, tomamos su valor
+                    else {
+                        // Tomamos solo texto directo del nodo, ignorando HTML interno
+                        return Array.from(cell.childNodes)
+                            .filter(node => node.nodeType === Node.TEXT_NODE)
+                            .map(node => node.textContent.trim())
+                            .join(' ');
+                    }
+                });
+                text += cells.join('\t') + '\n';
+            }
+        });
+        navigator.clipboard.writeText(text).then(() => alert('Tabla copiada al portapapeles'));
     });
-    navigator.clipboard.writeText(text).then(() => alert('Tabla copiada al portapapeles'));
-});
-
-
 
     // Exportar a Excel
     document.getElementById('btnExcel').addEventListener('click', () => {
@@ -327,6 +333,28 @@ document.getElementById('btnCopiar').addEventListener('click', () => {
         w.document.write('</body></html>');
         w.document.close();
         w.print();
+    });
+
+    // Validación de fecha en los campos
+    document.addEventListener('DOMContentLoaded', function() {
+        const fechaInputs = document.querySelectorAll('input[type="date"]');
+        fechaInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                const fechaSeleccionada = new Date(this.value);
+                const hoy = new Date();
+                hoy.setHours(0, 0, 0, 0);
+                
+                if (fechaSeleccionada > hoy) {
+                    Swal.fire({
+                        title: 'Fecha inválida',
+                        text: 'La fecha no puede ser futura.',
+                        icon: 'warning',
+                        confirmButtonText: 'Entendido'
+                    });
+                    this.value = hoy.toISOString().split('T')[0]; // Resetear a hoy
+                }
+            });
+        });
     });
 </script>
 

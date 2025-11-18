@@ -41,8 +41,7 @@
                 <div class="card-body">
                     <form method="POST" action="{{ url_for('agregar_producto') }}">
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Nombre del Perfume
-</label>
+                            <label class="form-label fw-bold">Nombre del Perfume</label>
                             <input type="text" class="form-control" name="nombre"
                                 placeholder="Ingrese el nombre del curso" required>
                         </div>
@@ -56,11 +55,16 @@
                             <textarea class="form-control" name="descripcion" rows="3"
                                 placeholder="Ingrese la descripción del curso" required></textarea>
                         </div>
+                        <!-- NUEVO CAMPO FECHA -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Fecha de Registro</label>
+                            <input type="date" class="form-control" name="fecha" 
+                                   value="{{ now.strftime('%Y-%m-%d') if now else '' }}" required>
+                        </div>
                         <div>
                             <button type="submit" class="btn btn-lg w-100"
                                 style="border: 2px solid #198754; color: #198754; background: transparent;">
                                 Agregar Marca de Perfume
-
                             </button>
                         </div>
                     </form>
@@ -68,7 +72,7 @@
             </div>
         </div>
 
-        <!-- TABLA DE CURSOS -->
+        <!-- TABLA DE perfunmes -->
         <div class="col-md-8">
             <div class="card shadow">
                 <div class="card-header text-center alert alert-primary py-3">
@@ -84,6 +88,7 @@
                                     <th>Nombre</th>
                                     <th>Precio</th>
                                     <th>Descripción</th>
+                                    <th>Fecha</th> <!-- NUEVA COLUMNA FECHA -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -94,11 +99,18 @@
                                     <td>{{ producto.nombre }}</td>
                                     <td>${{ "%.2f"|format(producto.precio) }}</td>
                                     <td>{{ producto.descripcion }}</td>
+                                    <td>
+                                        {% if producto.fecha %}
+                                            {{ producto.fecha.strftime('%d/%m/%Y') if producto.fecha is string else producto.fecha }}
+                                        {% else %}
+                                            Sin fecha
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 {% endfor %}
                                 {% else %}
                                 <tr>
-                                    <td colspan="4" class="text-center">No hay cursos registrados</td>
+                                    <td colspan="5" class="text-center">No hay perfumes registrados</td> <!-- Cambiado a colspan="5" -->
                                 </tr>
                                 {% endif %}
                             </tbody>
@@ -176,8 +188,9 @@
             const nombre = document.querySelector('input[name="nombre"]').value.trim();
             const precio = document.querySelector('input[name="precio"]').value;
             const descripcion = document.querySelector('textarea[name="descripcion"]').value.trim();
+            const fecha = document.querySelector('input[name="fecha"]').value;
 
-            if (!nombre || !precio || !descripcion) {
+            if (!nombre || !precio || !descripcion || !fecha) {
                 e.preventDefault();
                 Swal.fire({
                     title: 'Campos incompletos',
@@ -198,7 +211,28 @@
                 });
                 return false;
             }
+
+            // Validación de fecha (opcional)
+            const fechaSeleccionada = new Date(fecha);
+            const hoy = new Date();
+            if (fechaSeleccionada > hoy) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Fecha inválida',
+                    text: 'La fecha no puede ser futura.',
+                    icon: 'warning',
+                    confirmButtonText: 'Entendido'
+                });
+                return false;
+            }
         });
+
+        // Establecer fecha actual por defecto
+        const fechaInput = document.querySelector('input[name="fecha"]');
+        if (!fechaInput.value) {
+            const hoy = new Date().toISOString().split('T')[0];
+            fechaInput.value = hoy;
+        }
     });
 </script>
 {% endblock %}

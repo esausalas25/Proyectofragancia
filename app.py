@@ -2,8 +2,28 @@
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 
+# 🔐 Passlib para encriptar contraseñas
+from passlib.hash import pbkdf2_sha256
+
+# ================== HELPERS PARA CONTRASEÑAS ==================
+def hash_password(password: str) -> str:
+    """Devuelve el hash PBKDF2 de la contraseña."""
+    return pbkdf2_sha256.hash(password)
+
+def verify_password(raw_password: str, stored_password: str) -> bool:
+    """
+    Verifica la contraseña comparando con el hash almacenado.
+    Si el valor almacenado no es un hash válido, hace comparación directa
+    (compatibilidad con usuarios antiguos en texto plano).
+    """
+    try:
+        return pbkdf2_sha256.verify(raw_password, stored_password)
+    except ValueError:
+        # No era un hash válido, comparamos como texto plano
+        return raw_password == stored_password
+
 # ================== FLASK & MySQL ==================
-app = Flask(__name__,template_folder="templates")
+app = Flask(__name__, template_folder="templates")
 app.secret_key = '09f78ead-8a13-11f0-9f04-089798bc6dda'  # cambia por una clave segura
 
 app.config['MYSQL_HOST'] = 'b7si4ds7m59urowspuir-mysql.services.clever-cloud.com'
@@ -51,11 +71,12 @@ def accesologin():
     password = request.form.get('password', '').strip()
 
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM usuario WHERE email=%s AND password=%s", (email, password))
+    # Ahora obtenemos solo por email, y la contraseña la verificamos en Python
+    cur.execute("SELECT * FROM usuario WHERE email=%s", (email,))
     user = cur.fetchone()
     cur.close()
 
-    if user:
+    if user and verify_password(password, user['password']):
         session['usuario'] = user['email']
         session['nombre'] = user.get('nombre') or ''
         session['rol'] = user.get('id_rol', 2)
@@ -89,8 +110,13 @@ def Registro():
             flash("Ese correo ya está registrado.", "warning")
             return render_template("Registro.html")
 
-        cur.execute("INSERT INTO usuario (email, nombre, password, id_rol) VALUES (%s, %s, %s, %s)",
-                    (email, nombre, password, id_rol))
+        # 🔐 Guardar contraseña encriptada
+        hashed_password = hash_password(password)
+
+        cur.execute(
+            "INSERT INTO usuario (email, nombre, password, id_rol) VALUES (%s, %s, %s, %s)",
+            (email, nombre, hashed_password, id_rol)
+        )
         mysql.connection.commit()
         cur.close()
 
@@ -139,8 +165,13 @@ def listar():
         if not nombre or not email or not password:
             flash("Completa los campos.", "warning")
         else:
-            cur.execute("INSERT INTO usuario (nombre, email, password, id_rol) VALUES (%s, %s, %s, %s)",
-                        (nombre, email, password, id_rol))
+            # 🔐 Encriptar contraseña antes de guardar
+            hashed_password = hash_password(password)
+
+            cur.execute(
+                "INSERT INTO usuario (nombre, email, password, id_rol) VALUES (%s, %s, %s, %s)",
+                (nombre, email, hashed_password, id_rol)
+            )
             mysql.connection.commit()
             flash("Usuario agregado correctamente!", "success")
         cur.close()
@@ -153,8 +184,19 @@ def listar():
         email = request.form['email'].strip().lower()
         password = request.form['password'].strip()
 
-        cur.execute("UPDATE usuario SET nombre=%s, email=%s, password=%s WHERE id=%s",
-                    (nombre, email, password, user_id))
+        # Si el campo contraseña viene vacío, no la cambiamos
+        if password:
+            new_password = hash_password(password)
+            cur.execute(
+                "UPDATE usuario SET nombre=%s, email=%s, password=%s WHERE id=%s",
+                (nombre, email, new_password, user_id)
+            )
+        else:
+            cur.execute(
+                "UPDATE usuario SET nombre=%s, email=%s WHERE id=%s",
+                (nombre, email, user_id)
+            )
+
         mysql.connection.commit()
         cur.close()
         flash("Usuario actualizado correctamente!", "success")
@@ -174,9 +216,11 @@ def listar():
     usuarios = cur.fetchall()
     cur.close()
 
-    return render_template("editar_usuario.html",
-                           usuario=session['usuario'],
-                           usuarios=usuarios)
+    return render_template(
+        "editar_usuario.html",
+        usuario=session['usuario'],
+        usuarios=usuarios
+    )
 
 # ---- ELIMINAR USUARIO (POST limpio para usar con <form>) ----
 @app.route('/usuarios/<int:id>/borrar', methods=['POST'])
@@ -245,7 +289,7 @@ def listar_productos():
     cur.close()
     return render_template("listar_productos.html", usuario=session['usuario'], productos=productos)
 
-# Editar / Eliminar (POST)
+# Editar / Eliminar (POST) - VERSIÓN ORIGINAL
 @app.route('/editar_producto/<int:id>', methods=['POST'])
 def editar_producto(id):
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
