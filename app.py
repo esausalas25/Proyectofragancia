@@ -1,14 +1,17 @@
 ﻿from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
+from datetime import datetime, date  # 👈 para manejar fechas
 
 # 🔐 Passlib para encriptar contraseñas
 from passlib.hash import pbkdf2_sha256
+
 
 # ================== HELPERS PARA CONTRASEÑAS ==================
 def hash_password(password: str) -> str:
     """Devuelve el hash PBKDF2 de la contraseña."""
     return pbkdf2_sha256.hash(password)
+
 
 def verify_password(raw_password: str, stored_password: str) -> bool:
     """
@@ -21,6 +24,26 @@ def verify_password(raw_password: str, stored_password: str) -> bool:
     except ValueError:
         # No era un hash válido, comparamos como texto plano
         return raw_password == stored_password
+
+
+# ================== HELPER PARA FECHAS ==================
+def parse_fecha(fecha_str: str):
+    """
+    Intenta convertir la fecha que viene del formulario a objeto date.
+    Soporta formatos: 'YYYY-MM-DD' (input type="date") y 'DD/MM/YYYY'.
+    """
+    fecha_str = fecha_str.strip()
+    if not fecha_str:
+        return None
+
+    for fmt in ("%Y-%m-%d", "%d/%m/%Y"):
+        try:
+            return datetime.strptime(fecha_str, fmt).date()
+        except ValueError:
+            continue
+
+    return None  # formato no reconocido
+
 
 # ================== FLASK & MySQL ==================
 app = Flask(__name__, template_folder="templates")
@@ -35,10 +58,12 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'  # para que fetchone/fetchall dev
 
 mysql = MySQL(app)
 
+
 # ================== RUTAS BÁSICAS ==================
 @app.route('/')
 def inicio():
     return render_template("index.html")
+
 
 @app.route('/contacto', methods=['GET', 'POST'])
 def contacto():
@@ -48,6 +73,7 @@ def contacto():
         user['email'] = request.args.get('email', '')
         user['mensaje'] = request.args.get('mensaje', '')
     return render_template("contacto.html", usuario=user)
+
 
 @app.route('/contactopost', methods=['GET', 'POST'])
 def contactopost():
@@ -60,10 +86,12 @@ def contactopost():
         return redirect(url_for('contactopost'))
     return render_template("contactopost.html", usuario=user)
 
+
 # ================== AUTENTICACIÓN ==================
 @app.route('/login', methods=['GET'])
 def login():
     return render_template("login.html")
+
 
 @app.route('/accesologin', methods=['POST'])
 def accesologin():
@@ -88,6 +116,7 @@ def accesologin():
     else:
         flash('Usuario y Contraseña incorrecta', 'error')
         return redirect(url_for('login'))
+
 
 @app.route('/Registro', methods=['GET', 'POST'])
 def Registro():
@@ -125,11 +154,13 @@ def Registro():
 
     return render_template("Registro.html")
 
+
 @app.route('/logout')
 def logout():
     session.clear()
     flash("Sesión cerrada.", "success")
     return redirect(url_for('inicio'))
+
 
 # ================== PÁGINAS CON SESIÓN ==================
 @app.route('/usuario')
@@ -139,6 +170,7 @@ def usuario():
     else:
         return redirect(url_for('login'))
 
+
 @app.route('/admin')
 def admin():
     if 'usuario' in session and session.get('rol') == 1:
@@ -146,6 +178,7 @@ def admin():
     else:
         flash('Acceso restringido.', 'error')
         return redirect(url_for('login'))
+
 
 # ================== CRUD USUARIOS ==================
 @app.route('/listar', methods=['GET', 'POST'])
@@ -222,6 +255,7 @@ def listar():
         usuarios=usuarios
     )
 
+
 # ---- ELIMINAR USUARIO (POST limpio para usar con <form>) ----
 @app.route('/usuarios/<int:id>/borrar', methods=['POST'])
 def borrar_usuario(id):
@@ -243,6 +277,7 @@ def borrar_usuario(id):
     flash("Usuario eliminado.", "success")
     return redirect(url_for('listar'))
 
+
 # ================== CRUD PRODUCTOS ==================
 @app.route('/agregar_producto', methods=['GET', 'POST'])
 def agregar_producto():
@@ -250,25 +285,38 @@ def agregar_producto():
         nombre = request.form['nombre'].strip()
         precio = float(request.form['precio'])
         descripcion = request.form['descripcion'].strip()
+        fecha_str = request.form.get('fecha', '').strip()
+
+        fecha_obj = parse_fecha(fecha_str)
+        if fecha_obj is None:
+            flash("Formato de fecha inválido.", "warning")
+            return redirect(url_for('agregar_producto'))
+
+        if fecha_obj > date.today():
+            flash("La fecha de registro no puede ser mayor a la fecha actual.", "warning")
+            return redirect(url_for('agregar_producto'))
 
         cur = mysql.connection.cursor()
         cur.execute("""
-            INSERT INTO productos (nombre, precio, descripcion)
-            VALUES (%s, %s, %s)
-        """, (nombre, precio, descripcion))
+            INSERT INTO productos (nombre, precio, descripcion, fecha)
+            VALUES (%s, %s, %s, %s)
+        """, (nombre, precio, descripcion, fecha_obj))
         mysql.connection.commit()
         cur.close()
 
         flash('Producto agregado correctamente!', 'success')
         return redirect(url_for('agregar_producto'))
 
-    # Mostrar productos
+    # 👉 AQUÍ SOLO CAMBIO: mando la fecha de hoy al template para usarla como max
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cur.execute("SELECT * FROM productos ORDER BY id DESC")
     productos = cur.fetchall()
     cur.close()
 
-    return render_template('Agregar_productos.html', productos=productos)
+    hoy = date.today().strftime("%Y-%m-%d")
+    return render_template('Agregar_productos.html', productos=productos, hoy=hoy)
+
+
 
 @app.route('/listar_productos_agregados')
 def listar_productos_agregados():
@@ -278,6 +326,7 @@ def listar_productos_agregados():
     cur.close()
     # Reutiliza el mismo template
     return render_template('Agregar_productos.html', productos=productos)
+
 
 @app.route('/listar_productos')
 def listar_productos():
@@ -289,7 +338,8 @@ def listar_productos():
     cur.close()
     return render_template("listar_productos.html", usuario=session['usuario'], productos=productos)
 
-# Editar / Eliminar (POST) - VERSIÓN ORIGINAL
+
+# Editar / Eliminar (POST)
 @app.route('/editar_producto/<int:id>', methods=['POST'])
 def editar_producto(id):
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -310,21 +360,35 @@ def editar_producto(id):
         flash("Producto eliminado correctamente!", "success")
         return redirect(url_for('listar_productos'))
 
-    # actualizar
+    # ---- actualizar ----
     nombre = request.form['nombre'].strip()
     precio = float(request.form['precio'])
     descripcion = request.form['descripcion'].strip()
+    fecha_str = request.form.get('fecha', '').strip()
+
+    fecha_obj = parse_fecha(fecha_str)
+    if fecha_obj is None:
+        cur.close()
+        flash("Formato de fecha inválido.", "warning")
+        return redirect(url_for('listar_productos'))
+
+    # Validación: no permitir fecha futura
+    if fecha_obj > date.today():
+        cur.close()
+        flash("La fecha de registro no puede ser mayor a la fecha actual.", "warning")
+        return redirect(url_for('listar_productos'))
 
     cur.execute("""
         UPDATE productos
-        SET nombre=%s, precio=%s, descripcion=%s
+        SET nombre=%s, precio=%s, descripcion=%s, fecha=%s
         WHERE id=%s
-    """, (nombre, precio, descripcion, id))
+    """, (nombre, precio, descripcion, fecha_obj, id))
     mysql.connection.commit()
     cur.close()
 
     flash("Producto actualizado correctamente!", "success")
     return redirect(url_for('listar_productos'))
+
 
 # Eliminar (GET simple — útil para enlaces rápidos)
 @app.route('/eliminar_producto/<int:id>')
@@ -336,10 +400,12 @@ def eliminar_producto(id):
     flash('Producto eliminado correctamente!', 'success')
     return redirect(url_for('listar_productos_agregados'))
 
+
 # ================== OTRAS ==================
 @app.route('/acercade')
 def acercade():
     return render_template("acercade.html")
+
 
 # ================== MAIN ==================
 if __name__ == '__main__':

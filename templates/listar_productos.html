@@ -47,7 +47,7 @@
                     <th>Nombre</th>
                     <th>Precio</th>
                     <th>Descripción</th>
-                    <th>Fecha</th> <!-- NUEVA COLUMNA FECHA -->
+                    <th>Fecha</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -55,7 +55,8 @@
                 {% for producto in productos %}
                 <tr>
                     <td class="text-center">{{ producto.id }}</td>
-                    <form method="POST" action="{{ url_for('editar_producto', id=producto.id) }}">
+                    <!-- FORMULARIO ÚNICO POR FILA -->
+                    <form method="POST" action="{{ url_for('editar_producto', id=producto.id) }}" id="form-{{ producto.id }}">
                         <td>
                             <input type="text" name="nombre" value="{{ producto.nombre }}"
                                 class="form-control form-control-sm">
@@ -68,78 +69,20 @@
                             <input type="text" name="descripcion" value="{{ producto.descripcion }}"
                                 class="form-control form-control-sm">
                         </td>
-                        <!-- NUEVO CAMPO FECHA -->
+                        <!-- CAMPO FECHA EDITABLE -->
                         <td>
                             <input type="date" name="fecha" value="{% if producto.fecha %}{% if producto.fecha is string %}{{ producto.fecha }}{% else %}{{ producto.fecha.strftime('%Y-%m-%d') }}{% endif %}{% endif %}"
                                 class="form-control form-control-sm">
                         </td>
                         <td class="text-center">
-                            <form method="POST" action="">
-                                <form method="POST" action="">
-                                    <button type="button" class="btn btn-success btn-sm me-1 shadow-sm" title="Guardar"
-                                        onclick="confirmarGuardado(this.form)">
-                                        <i class="fas fa-pen"></i>
-                                    </button>
-
-                                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                                    <script>
-                                        function confirmarGuardado(form) {
-                                            Swal.fire({
-                                                title: '¿Deseas guardar los cambios?',
-                                                icon: 'question',
-                                                showCancelButton: true,
-                                                confirmButtonColor: '#28a745',
-                                                cancelButtonColor: '#6c757d',
-                                                confirmButtonText: 'Sí, guardar',
-                                                cancelButtonText: 'Cancelar'
-                                            }).then((result) => {
-                                                if (result.isConfirmed) {
-                                                    // Creamos un input oculto para indicar la acción "guardar"
-                                                    let input = document.createElement("input");
-                                                    input.type = "hidden";
-                                                    input.name = "accion";
-                                                    input.value = "guardar";
-                                                    form.appendChild(input);
-
-                                                    form.submit();
-                                                }
-                                            });
-                                        }
-                                    </script>
-
-                                    <button type="button" class="btn btn-danger btn-sm shadow-sm" title="Eliminar"
-                                        onclick="confirmarEliminacion(this.form)">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-
-                                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                                <script>
-                                    function confirmarEliminacion(form) {
-                                        Swal.fire({
-                                            title: '¿Estás seguro?',
-                                            text: "¡Esta acción no se puede deshacer!",
-                                            icon: 'warning',
-                                            showCancelButton: true,
-                                            confirmButtonColor: '#d33',
-                                            cancelButtonColor: '#3085d6',
-                                            confirmButtonText: 'Sí, eliminar',
-                                            cancelButtonText: 'Cancelar'
-                                        }).then((result) => {
-                                            if (result.isConfirmed) {
-                                                // Creamos un input oculto para indicar la acción "eliminar"
-                                                let input = document.createElement("input");
-                                                input.type = "hidden";
-                                                input.name = "accion";
-                                                input.value = "eliminar";
-                                                form.appendChild(input);
-
-                                                form.submit();
-                                            }
-                                        });
-                                    }
-                                </script>
-
+                            <button type="button" class="btn btn-success btn-sm me-1 shadow-sm" title="Guardar"
+                                onclick="confirmarGuardado('form-{{ producto.id }}')">
+                                <i class="fas fa-save"></i>
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm shadow-sm" title="Eliminar"
+                                onclick="confirmarEliminacion('form-{{ producto.id }}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </td>
                     </form>
                 </tr>
@@ -157,6 +100,9 @@
     </div>
 
 </div>
+
+<!-- Scripts de SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <!-- Estilos -->
 <style>
@@ -203,13 +149,68 @@
 
     /* Estilo específico para el campo fecha */
     input[type="date"] {
-        max-width: 120px;
+        max-width: 140px;
+        min-width: 120px;
+    }
+
+    /* Mejorar la apariencia de los formularios en tabla */
+    form {
+        display: contents; /* Permite que el formulario se comporte como parte de la tabla */
     }
 </style>
 
-<!-- Scripts -->
+<!-- Scripts de funcionalidad -->
 <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 <script>
+    // ===== FUNCIONES DE CONFIRMACIÓN =====
+    function confirmarGuardado(formId) {
+        const form = document.getElementById(formId);
+        Swal.fire({
+            title: '¿Deseas guardar los cambios?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#28a745',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, guardar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Creamos un input oculto para indicar la acción "guardar"
+                let input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "accion";
+                input.value = "guardar";
+                form.appendChild(input);
+                form.submit();
+            }
+        });
+    }
+
+    function confirmarEliminacion(formId) {
+        const form = document.getElementById(formId);
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡Esta acción no se puede deshacer!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Creamos un input oculto para indicar la acción "eliminar"
+                let input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "accion";
+                input.value = "eliminar";
+                form.appendChild(input);
+                form.submit();
+            }
+        });
+    }
+
+    // ===== FILTRADO Y PAGINACIÓN =====
     const searchInput = document.getElementById('searchInput');
     const registrosSelect = document.getElementById('registrosSelect');
     const tableBody = document.querySelector('#productosTable tbody');
@@ -218,7 +219,6 @@
     const infoPagina = document.getElementById('infoPagina');
     let currentPage = 1;
 
-    // ===== Filtrar y paginar =====
     function filtrarYPaginar() {
         const filter = searchInput.value.toLowerCase();
         const rowsPerPage = parseInt(registrosSelect.value);
@@ -229,7 +229,10 @@
             const id = row.querySelector('td:first-child')?.textContent.toLowerCase() || '';
             const fechaInput = row.querySelector('input[name="fecha"]');
             const fecha = fechaInput ? fechaInput.value.toLowerCase() : '';
-            return id.includes(filter) || nombre.includes(filter) || fecha.includes(filter);
+            const descripcionInput = row.querySelector('input[name="descripcion"]');
+            const descripcion = descripcionInput ? descripcionInput.value.toLowerCase() : '';
+            
+            return id.includes(filter) || nombre.includes(filter) || fecha.includes(filter) || descripcion.includes(filter);
         });
 
         const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
@@ -271,18 +274,17 @@
     registrosSelect.addEventListener('change', () => { currentPage = 1; filtrarYPaginar(); });
     filtrarYPaginar();
 
-    // ===== Botones funcionales =====
+    // ===== BOTONES FUNCIONALES =====
 
     // Copiar tabla
     document.getElementById('btnCopiar').addEventListener('click', () => {
         let text = '';
         allRows.forEach(row => {
-            if (row.style.display !== 'none') { // Solo filas visibles
+            if (row.style.display !== 'none') {
                 const cells = Array.from(row.cells).map(cell => {
                     const input = cell.querySelector('input');
-                    if (input) return input.value.trim(); // Si hay input, tomamos su valor
+                    if (input) return input.value.trim();
                     else {
-                        // Tomamos solo texto directo del nodo, ignorando HTML interno
                         return Array.from(cell.childNodes)
                             .filter(node => node.nodeType === Node.TEXT_NODE)
                             .map(node => node.textContent.trim())
@@ -292,7 +294,15 @@
                 text += cells.join('\t') + '\n';
             }
         });
-        navigator.clipboard.writeText(text).then(() => alert('Tabla copiada al portapapeles'));
+        navigator.clipboard.writeText(text).then(() => {
+            Swal.fire({
+                title: '¡Copiado!',
+                text: 'Tabla copiada al portapapeles',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        });
     });
 
     // Exportar a Excel
@@ -303,11 +313,13 @@
         ws_data.push(headers);
         // Filas
         allRows.forEach(row => {
-            const rowData = Array.from(row.cells).map(cell => {
-                const input = cell.querySelector('input');
-                return input ? input.value : cell.innerText;
-            });
-            ws_data.push(rowData);
+            if (row.style.display !== 'none') {
+                const rowData = Array.from(row.cells).map(cell => {
+                    const input = cell.querySelector('input');
+                    return input ? input.value : cell.innerText;
+                });
+                ws_data.push(rowData);
+            }
         });
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.aoa_to_sheet(ws_data);
@@ -318,7 +330,8 @@
     // Exportar a PDF
     document.getElementById('btnPDF').addEventListener('click', () => {
         const w = window.open('', '', 'height=600,width=800');
-        w.document.write('<html><head><title>PDF</title></head><body>');
+        w.document.write('<html><head><title>PDF - Lista de Perfumes</title></head><body>');
+        w.document.write('<h2>Lista de Perfumes</h2>');
         w.document.write(document.getElementById('productosTable').outerHTML);
         w.document.write('</body></html>');
         w.document.close();
@@ -328,7 +341,8 @@
     // Imprimir
     document.getElementById('btnImprimir').addEventListener('click', () => {
         const w = window.open('', '', 'height=600,width=800');
-        w.document.write('<html><head><title>Imprimir</title></head><body>');
+        w.document.write('<html><head><title>Imprimir - Lista de Perfumes</title></head><body>');
+        w.document.write('<h2>Lista de Perfumes</h2>');
         w.document.write(document.getElementById('productosTable').outerHTML);
         w.document.write('</body></html>');
         w.document.close();
@@ -342,7 +356,7 @@
             input.addEventListener('change', function() {
                 const fechaSeleccionada = new Date(this.value);
                 const hoy = new Date();
-                hoy.setHours(0, 0, 0, 0);
+                hoy.setHours(23, 59, 59, 999);
                 
                 if (fechaSeleccionada > hoy) {
                     Swal.fire({
@@ -351,7 +365,7 @@
                         icon: 'warning',
                         confirmButtonText: 'Entendido'
                     });
-                    this.value = hoy.toISOString().split('T')[0]; // Resetear a hoy
+                    this.value = hoy.toISOString().split('T')[0];
                 }
             });
         });

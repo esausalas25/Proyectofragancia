@@ -31,39 +31,41 @@
 
 <div class="container mt-4">
     <div class="row">
-        <!-- FORMULARIO AGREGAR CURSO -->
+        <!-- FORMULARIO AGREGAR PERFUME -->
         <div class="col-md-4">
             <div class="card shadow">
                 <div class="card-header text-center alert alert-danger py-3">
-                    <h3 class="card-title mb-0">Agregar Marca de Perfume
-                    </h3>
+                    <h3 class="card-title mb-0">Agregar Marca de Perfume</h3>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ url_for('agregar_producto') }}">
+                    <form method="POST" action="{{ url_for('agregar_producto') }}" autocomplete="off">
                         <div class="mb-3">
                             <label class="form-label fw-bold">Nombre del Perfume</label>
                             <input type="text" class="form-control" name="nombre"
-                                placeholder="Ingrese el nombre del curso" required>
+                                   placeholder="Ingrese el nombre del perfume" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Precio ($)</label>
-                            <input type="number" class="form-control" name="precio" placeholder="0.00" step="0.01"
-                                min="0" required>
+                            <input type="number" class="form-control" name="precio" placeholder="0.00"
+                                   step="0.01" min="0" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Descripción</label>
                             <textarea class="form-control" name="descripcion" rows="3"
-                                placeholder="Ingrese la descripción del curso" required></textarea>
+                                      placeholder="Ingrese la descripción del perfume" required></textarea>
                         </div>
                         <!-- NUEVO CAMPO FECHA -->
                         <div class="mb-3">
                             <label class="form-label fw-bold">Fecha de Registro</label>
-                            <input type="date" class="form-control" name="fecha" 
-                                   value="{{ now.strftime('%Y-%m-%d') if now else '' }}" required>
+                            <input type="date"
+                                   name="fecha"
+                                   class="form-control"
+                                   max="{{ hoy }}"
+                                   required>
                         </div>
                         <div>
                             <button type="submit" class="btn btn-lg w-100"
-                                style="border: 2px solid #198754; color: #198754; background: transparent;">
+                                    style="border: 2px solid #198754; color: #198754; background: transparent;">
                                 Agregar Marca de Perfume
                             </button>
                         </div>
@@ -72,12 +74,11 @@
             </div>
         </div>
 
-        <!-- TABLA DE perfunmes -->
+        <!-- TABLA DE PERFUMES -->
         <div class="col-md-8">
             <div class="card shadow">
                 <div class="card-header text-center alert alert-primary py-3">
-                    <h3 class="card-title mb-0">Lista de Marcas de Perfume
-                    </h3>
+                    <h3 class="card-title mb-0">Lista de Marcas de Perfume</h3>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive" style="max-height: 500px; overflow-y:auto;">
@@ -93,24 +94,28 @@
                             </thead>
                             <tbody>
                                 {% if productos and productos|length > 0 %}
-                                {% for producto in productos %}
-                                <tr>
-                                    <td>{{ producto.id }}</td>
-                                    <td>{{ producto.nombre }}</td>
-                                    <td>${{ "%.2f"|format(producto.precio) }}</td>
-                                    <td>{{ producto.descripcion }}</td>
-                                    <td>
-                                        {% if producto.fecha %}
-                                            {{ producto.fecha.strftime('%d/%m/%Y') if producto.fecha is string else producto.fecha }}
-                                        {% else %}
-                                            Sin fecha
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                {% endfor %}
+                                    {% for producto in productos %}
+                                        <tr>
+                                            <td>{{ producto.id }}</td>
+                                            <td>{{ producto.nombre }}</td>
+                                            <td>${{ "%.2f"|format(producto.precio) }}</td>
+                                            <td>{{ producto.descripcion }}</td>
+                                            <td>
+                                                {% if producto.fecha %}
+                                                    {% if producto.fecha is string %}
+                                                        {{ producto.fecha }}
+                                                    {% else %}
+                                                        {{ producto.fecha.strftime('%d/%m/%Y') }}
+                                                    {% endif %}
+                                                {% else %}
+                                                    Sin fecha
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
                                 {% else %}
                                 <tr>
-                                    <td colspan="5" class="text-center">No hay perfumes registrados</td> <!-- Cambiado a colspan="5" -->
+                                    <td colspan="5" class="text-center">No hay perfumes registrados</td>
                                 </tr>
                                 {% endif %}
                             </tbody>
@@ -212,9 +217,12 @@
                 return false;
             }
 
-            // Validación de fecha (opcional)
+            // Validación de fecha: no futura
             const fechaSeleccionada = new Date(fecha);
             const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            fechaSeleccionada.setHours(0, 0, 0, 0);
+
             if (fechaSeleccionada > hoy) {
                 e.preventDefault();
                 Swal.fire({
@@ -226,13 +234,6 @@
                 return false;
             }
         });
-
-        // Establecer fecha actual por defecto
-        const fechaInput = document.querySelector('input[name="fecha"]');
-        if (!fechaInput.value) {
-            const hoy = new Date().toISOString().split('T')[0];
-            fechaInput.value = hoy;
-        }
     });
 </script>
 {% endblock %}
